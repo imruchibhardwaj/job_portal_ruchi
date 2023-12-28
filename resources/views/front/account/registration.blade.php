@@ -49,15 +49,16 @@
             e.preventDefault();
 
             $.ajax({
-                url: '{{ route('account.processRegistration') }}',
+                url: "{{ route('account.processRegistration') }}",
                 type: 'post',
+                
                 data: $("#registrationForm").serializeArray(),
                 dataType: 'json',
                 success: function(response) {
                     if (response.status == false) {
                         var errors = response.errors;
                         if (errors.name) {
-                            $("#name").addClass('is.invalid')
+                            $("#name").addClass('is-invalid')
                                 .siblings('p')
                                 .addClass('invalid-feedback')
                                 .html(errors.name)
