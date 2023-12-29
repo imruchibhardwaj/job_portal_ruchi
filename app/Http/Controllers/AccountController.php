@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -19,14 +20,43 @@ class AccountController extends Controller
     {
         return view('front.account.login');
     }
+   
+
+    //authenticate login process
+
+    public function authenticate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+
+        ]);
+        if ($validator->passes()) {
+            if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+                return redirect()->route('account.profile');
+            } else {
+                return redirect()->route('account.login')->with('error', 'either email/password is incorrect');
+            }
+        } else {
+            return redirect()->route('account.login')
+                ->withErrors($validator)
+                ->withInput($request->only('email'));
+        }
+    }
+    //profile page
+    public function profile()
+    {
+        echo "profile page";
+    }
+
     //this method will save user data
     public function processRegistration(Request $request)
-    {   
+    {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min.5|same:confirm_password',
+            'password' => 'required|min:5|same:confirm_password',
             'confirm_password' => 'required'
         ]);
         if ($validator->passes()) {
