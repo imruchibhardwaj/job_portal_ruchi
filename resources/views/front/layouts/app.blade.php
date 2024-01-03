@@ -29,8 +29,12 @@
 					<li class="nav-item">
 						<a class="nav-link" aria-current="page" href="jobs.html">Find Jobs</a>
 					</li>										
-				</ul>				
-				<a class="btn btn-outline-primary me-2" href="{{ route('account.login')}}" type="submit">Login</a>
+				</ul>	
+                  @if (!Auth::check())
+				     <a class="btn btn-outline-primary me-2" href="{{ route('account.login')}}" type="submit">Login</a>
+					 @else
+					 <a class="btn btn-outline-primary me-2" href="{{ route('account.profile')}}" type="submit">Account</a>
+				  @endif
 				<a class="btn btn-primary" href="post-job.html" type="submit">Post a Job</a>
 			</div>
 		</div>
@@ -47,7 +51,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form id="profilePicForm" name="profilePicForm" action="" method="post">
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Profile Image</label>
                 <input type="file" class="form-control" id="image"  name="image">
@@ -78,6 +82,27 @@
 			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 		}
 	});
+	$("#profilePicForm").submit(function(e){
+		e.preventDefault();
+
+        var formDate = new formDate(this);
+
+		$.ajax({
+			url: '{{route("account.updateProfilePic")}}',
+			type: 'post',
+			datatype: 'json',
+			data: formData,
+			contentType: false,
+			processDate: false,
+			success: function(response){
+
+			}
+
+
+		});
+	});
+
+
 </script>
 @yield('customJs')
 </body>

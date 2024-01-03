@@ -20,6 +20,14 @@ class AccountController extends Controller
     {
         return view('front.account.login');
     }
+     
+
+
+    //this section for updateprofilepic
+    public function updateProfilePic(Request $request)
+    {
+       dd($request->all());
+    }
    
 
     //authenticate login process
@@ -46,9 +54,60 @@ class AccountController extends Controller
     //profile page
     public function profile()
     {
-        echo "profile page";
-    }
+       $id = Auth::user()->id;
+       
+      
 
+       $user = User::where('id',$id)->first();
+    
+
+
+       return view('front.account.profile',[
+        'user' => $user]);
+    }
+      // update profile
+    public function upadteProfile(Request $request){
+
+        $id = Auth::user()->id;
+
+        $validator = Validator::make($request->all(), [
+
+
+            'name' => 'required|min:5|max:20',
+            'email' => 'required|email|unique:users,email,.$id.,id',
+
+        ]);
+
+        if($validator->passes()) {
+
+            $user = User::find($id);
+
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->mobile = $request->mobile;
+            $user->destination = $request->designation;
+            $user->save();
+
+            session()->flash('success','profile updated successfully');
+
+            return response()->json([
+                'status' => true,
+                'errors' => []
+            ]);
+
+        }else{
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+
+    }
+     //logout
+     public function logout(){
+        Auth::logout();
+        return redirect()->route('account.login');
+     }
     //this method will save user data
     public function processRegistration(Request $request)
     {
